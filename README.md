@@ -76,10 +76,32 @@ Coloanele `S.No`, `Product Name`, `Currancy` și `MRP` nu sunt înregistrate (re
    ```
    pip install recombee-api-client pandas
    ```
-2. În [`recombee_properties.py`](recombee_properties.py) completați `DB_NAME`, `PRIVATE_TOKEN` și `REGION` (din *Settings -> API Logins* în Recombee Admin UI).
+2. Setați credențialele ca variabile de mediu (din *Settings -> API Logins* în Recombee Admin UI); tokenul nu se pune în cod:
+   ```
+   export RECOMBEE_DB_NAME='numele_bazei'
+   export RECOMBEE_PRIVATE_TOKEN='tokenul_privat'
+   ```
+   Regiunea (`REGION`) se schimbă direct în [`recombee_properties.py`](recombee_properties.py), dacă este cazul.
 3. Rulați scriptul din rădăcina repository-ului:
    ```
    python recombee_properties.py
    ```
 
 Scriptul verifică dataset-ul, trimite proprietățile către Recombee și apoi listează proprietățile configurate pentru confirmare.
+
+## Încărcarea item-urilor (Laboratorul 3)
+
+Scriptul [`recombee_items.py`](recombee_items.py) citește `dataset/products.csv` și trimite fiecare produs în Recombee prin `SetItemValues`, în loturi (`Batch`) de câte 100.
+
+- `Product ID` → `itemId`
+- `BrandName` → `brand`, `Brand Desc` → `descriere`, `Category` → `categorie`, `SellPrice` → `pret`
+- `Discount` → `discount` (`"70% off"` → `70`)
+- `Product Size` → `marimi` (`"Size:Medium,Small"` → `["Medium", "Small"]`; `Nan` → proprietatea nu se setează)
+
+Credențialele se citesc din [`recombee_properties.py`](recombee_properties.py). Rulare (după `recombee_properties.py`):
+
+```
+python recombee_items.py
+```
+
+Verificare: în [Recombee Admin UI](https://admin.recombee.com/), la secțiunea *Items*, apar 4.566 produse cu proprietățile completate.
